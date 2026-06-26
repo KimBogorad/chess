@@ -1,0 +1,46 @@
+<mxfile host="Electron">
+  <diagram name="‫עמוד-1‬" id="em6rRTp4puRTT8ifFJUW">
+    <mxGraphModel dx="2039" dy="1905" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="eqax4OJr-jrzzhssShSM-5" parent="1" style="html=1;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="490" width="810" x="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-1" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="GamePiece" vertex="1">
+          <mxGeometry height="114" width="160" x="160" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-2" parent="eqax4OJr-jrzzhssShSM-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="- color : boolean&lt;div&gt;- is_alive : boolean&lt;/div&gt;&lt;div&gt;- pos : Cell&lt;/div&gt;" vertex="1">
+          <mxGeometry height="54" width="160" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-3" parent="eqax4OJr-jrzzhssShSM-1" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
+          <mxGeometry height="8" width="160" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-4" parent="eqax4OJr-jrzzhssShSM-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ method(type): type" vertex="1">
+          <mxGeometry height="26" width="160" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Business Layer" vertex="1">
+          <mxGeometry height="20" width="90" x="150" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-7" parent="1" style="html=1;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="310" width="480" x="130" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Data Access Layer" vertex="1">
+          <mxGeometry height="20" width="110" x="140" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-9" parent="1" style="html=1;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="310" width="480" x="140" y="-290" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Service Layer" vertex="1">
+          <mxGeometry height="20" width="90" x="150" y="-280" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="1169" width="827" x="-827" y="-1169" as="geometry" />
+        </mxCell>
+        <mxCell id="eqax4OJr-jrzzhssShSM-12" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Chess - Description and Requirements&lt;/h1&gt;&lt;div&gt;Board:&lt;/div&gt;&lt;div&gt;1. A board is rectangular and is made of&amp;nbsp; 64 cells in 8 rows and 8 columns.&lt;/div&gt;&lt;div&gt;2. The rows are identifiable by letters - &#39;a&#39; - &#39;h&#39;, &#39;a&#39; signifying the &quot;lowest&quot; row - bottom row of the board.&lt;/div&gt;&lt;div&gt;3. The columns are identifiable by numbers - 1-8, 1 signifying the left-most column.&lt;/div&gt;&lt;div&gt;4. Therefore, each cell can be represented&amp;nbsp; by a pair of letter and number.&lt;/div&gt;&lt;div&gt;5. The board is made of black and white cells as follows: no two adjacent cells will be of the same color in any row or any column. All cells across the same diagonal will be of the same color.&lt;/div&gt;&lt;div&gt;6. No game piece can legally move off of the board.&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Game Pieces:&amp;nbsp;&lt;/div&gt;&lt;div&gt;1. There are two colors for game pieces - black and white.&lt;/div&gt;&lt;div&gt;2.&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Game Flow:&lt;/div&gt;&lt;div&gt;1. The starting position will always be the same.&lt;/div&gt;&lt;div&gt;2. The position and quantity of each game piece is fixed.&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Parser:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Legal and Illegal moves:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Win, Lose, Draw:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="920" width="810" x="-820" y="-1150" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
