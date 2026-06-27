@@ -49,5 +49,8 @@ public class Position {
     public int DistanceY(Position new_pos) {
         return this.y - new_pos.y;
     }
-    
+    // return the difference between the old and new coordinates.
+    public Position GetGap(Position new_pos) {
+        return new Position(DistanceX(new_pos), DistanceY(new_pos));
+    }
 }

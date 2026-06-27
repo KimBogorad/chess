@@ -1,9 +1,14 @@
+import java.util.List;
+import java.util.ArrayList;
+
 public abstract class GamePiece {
     protected boolean color;
-    protected boolean is_alive;
 
     public GamePiece(boolean color) {
         this.color = color;
-        this.is_alive = true;
+    }
+
+    public boolean getColor() {
+        return color;
     }
 }
