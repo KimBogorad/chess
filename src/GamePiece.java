@@ -1,14 +1,18 @@
 import java.util.List;
-import java.util.ArrayList;
 
 public abstract class GamePiece {
-    protected boolean color;
+    protected PieceColor color; // Enum: WHITE, BLACK
+    protected Position position;
 
-    public GamePiece(boolean color) {
+    public GamePiece(PieceColor color, Position position) {
         this.color = color;
+        this.position = position;
     }
 
-    public boolean getColor() {
+    public PieceColor getColor() {
         return color;
     }
+
+    // מתודה אבסטרקטית שכל כלי מממש בעצמו
+    public abstract List<List<Position>> getMoveRays();
 }
