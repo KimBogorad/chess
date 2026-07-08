@@ -20,17 +20,4 @@ public class King extends GamePiece {
 
         return legalMoves;
     }
-
-    private List<Position> generateMove(int rowDelta, int colDelta) {
-        List<Position> move = new ArrayList<>();
-        int newRow = position.row() + rowDelta;
-        int newCol = position.col() + colDelta;
-
-        Position newPosition = new Position(newRow, newCol);
-        if (newPosition.isWithinBounds()) {
-            move.add(newPosition);
-        }
-
-        return move;
-    }
 }

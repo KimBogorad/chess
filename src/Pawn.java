@@ -2,38 +2,53 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Pawn extends GamePiece {
+
+    private boolean hasMoved = false;
+
     public Pawn(PieceColor color, Position position) {
         super(color, position);
     }
 
-    @Override
+    @Override 
     public List<List<Position>> getMoveRays() {
-        List<List<Position>> legalMoves = new ArrayList<>();
-        int direction = (color == PieceColor.WHITE) ? -1 : 1; // White moves up, Black moves down
-        if(this.position.row() == (color == PieceColor.WHITE ? 6 : 1)) {
-            // If the pawn is in its initial position, it can move two squares forward
-            legalMoves.add(generateMove(2 * direction, 0));
+        List<List<Position>> allRays = new ArrayList<>();
+        allRays.addAll(getWalkRays());
+        allRays.addAll(getCaptureRays());
+        return allRays;
+    }
+    
+    @Override
+    public List<List<Position>> getWalkRays() {
+        int direction = (color == PieceColor.WHITE) ? -1 : 1; 
+        List<List<Position>> walkRays = new ArrayList<>();
+        List<Position> forwardRay = new ArrayList<>();
+
+        int nextRow = position.row() + direction;
+        int col = position.col();
+
+        if (nextRow >= 0 && nextRow < 8) {
+            forwardRay.add(new Position(nextRow, col)); // first step
+            int doubleStepRow = nextRow + direction;
+            if (!hasMoved && doubleStepRow >= 0 && doubleStepRow < 8) {
+                forwardRay.add(new Position(doubleStepRow, col)); // second step
+            }
         }
-        // Forward move
-        legalMoves.add(generateMove(direction, 0));
 
-        // Capture moves
-        legalMoves.add(generateMove(direction, 1));  // Diagonal right
-        legalMoves.add(generateMove(direction, -1)); // Diagonal left
-
-        return legalMoves;
+        walkRays.add(forwardRay);
+        return walkRays;
     }
 
-    private List<Position> generateMove(int rowDelta, int colDelta) {
-        List<Position> move = new ArrayList<>();
-        int newRow = position.row() + rowDelta;
-        int newCol = position.col() + colDelta;
+    @Override
+    public List<List<Position>> getCaptureRays() {
+        int direction = (color == PieceColor.WHITE) ? -1 : 1; // White moves up, Black moves down
+        List<List<Position>> captureRays = new ArrayList<>();
+        captureRays.add(generateMove(direction, 1));  // Diagonal right
+        captureRays.add(generateMove(direction, -1)); // Diagonal left
 
-        Position newPosition = new Position(newRow, newCol);
-        if (newPosition.isWithinBounds()) {
-            move.add(newPosition);
-        }
+        return captureRays;
+    }
 
-        return move;
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
     }
 }

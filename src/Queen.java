@@ -24,22 +24,4 @@ public class Queen extends GamePiece {
 
         return allRays;
     }
-
-    private List<Position> generateRay(int rowDelta, int colDelta) {
-        List<Position> ray = new ArrayList<>();
-        int currentRow = position.row() + rowDelta;
-        int currentCol = position.col() + colDelta;
-
-        while (currentRow >= 0 && currentRow < 8 && currentCol >= 0 && currentCol < 8) {
-            Position newPosition = new Position(currentRow, currentCol);
-            if (!newPosition.isWithinBounds()) {
-                break;
-            }
-            ray.add(newPosition);
-            currentRow += rowDelta;
-            currentCol += colDelta;
-        }
-        return ray;
-    }
-
 }
