@@ -1,5 +1,9 @@
+package com.chess.pieces;
+
 import java.util.ArrayList;
 import java.util.List;
+import com.chess.enums.PieceColor;
+import com.chess.board.Position;
 
 public abstract class GamePiece {
     protected PieceColor color; // Enum: WHITE, BLACK
