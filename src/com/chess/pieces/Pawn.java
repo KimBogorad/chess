@@ -2,7 +2,7 @@ package com.chess.pieces;
 
 import java.util.List;
 import java.util.ArrayList;
-import com.chess.enums.PieceColor;
+import com.chess.enums.*;
 import com.chess.board.Position;
 
 public class Pawn extends GamePiece {
@@ -10,7 +10,7 @@ public class Pawn extends GamePiece {
     private boolean hasMoved = false;
 
     public Pawn(PieceColor color, Position position) {
-        super(color, position);
+        super(color, position, PieceType.PAWN);
     }
 
     @Override 

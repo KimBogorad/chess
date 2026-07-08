@@ -2,12 +2,12 @@ package com.chess.pieces;
 
 import java.util.List;
 import java.util.ArrayList;
-import com.chess.enums.PieceColor;
+import com.chess.enums.*;
 import com.chess.board.Position;
 
 public class Bishop extends GamePiece {
     public Bishop(PieceColor color, Position position) {
-        super(color, position);
+        super(color, position, PieceType.BISHOP);
     }
 
     @Override

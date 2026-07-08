@@ -2,16 +2,18 @@ package com.chess.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.chess.enums.PieceColor;
+import com.chess.enums.*;
 import com.chess.board.Position;
 
 public abstract class GamePiece {
     protected PieceColor color; // Enum: WHITE, BLACK
     protected Position position;
+    protected PieceType pieceType; // Enum: PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING
 
-    public GamePiece(PieceColor color, Position position) {
+    public GamePiece(PieceColor color, Position position, PieceType pieceType) {
         this.color = color;
         this.position = position;
+        this.pieceType = pieceType;
     }
 
     public PieceColor getColor() {

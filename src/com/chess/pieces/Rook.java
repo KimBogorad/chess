@@ -2,13 +2,13 @@ package com.chess.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.chess.enums.PieceColor;
+import com.chess.enums.*;
 import com.chess.board.Position;
 
 public class Rook extends GamePiece {
 
     public Rook(PieceColor color, Position position) {
-        super(color, position);
+        super(color, position, PieceType.ROOK);
     }
 
     @Override
