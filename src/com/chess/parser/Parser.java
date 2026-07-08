@@ -73,6 +73,11 @@ public class Parser {
     private Position parsePosition(String pos) {
         int col = pos.charAt(0) - 'a'; // 'a' -> 0, 'b' -> 1, ..., 'h' -> 7
         int row = 8 - Character.getNumericValue(pos.charAt(1)); // '1' -> 7, '2' -> 6, ..., '8' -> 0
-        return new Position(row, col);
+        
+        Position pos_intent = new Position(row, col);
+        if (!pos_intent.isWithinBounds()) {
+            throw new IllegalArgumentException("Invalid position input: " + pos);
+        }
+        return pos_intent;
     }
 }
