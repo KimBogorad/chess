@@ -61,4 +61,8 @@ public abstract class GamePiece {
         }
         return ray;
     }
+
+    public PieceType getPieceType() {
+        return pieceType;
+    }
 }
