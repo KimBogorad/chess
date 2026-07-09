@@ -4,70 +4,48 @@ import com.chess.board.Board;
 import com.chess.board.Position;
 import com.chess.enums.*;
 import com.chess.parser.ParsedIntent;
-import com.chess.parser.Parser;
 import com.chess.pieces.GamePiece;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Game {
     private Board board;
-    private Parser parser;
     private PieceColor currentPlayer;
     private GameStatus gameStatus;
 
     public Game() {
         this.board = new Board();
-        this.parser = new Parser();
         this.currentPlayer = PieceColor.WHITE; // White always starts (racism aside)
         this.gameStatus = GameStatus.ACTIVE;
     }
 
-    public void start() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to Java Chess!");
-        printBoard();
+    // validate move, play, switch currentPlayer and update game status
+    public boolean playTurn(ParsedIntent intent) {
+        GamePiece pieceToMove = processAndValidateMove(intent);
 
-        while (gameStatus == GameStatus.ACTIVE) {
-            System.out.print("\n" + currentPlayer + "'s turn. Enter move (e.g., e4, Nf3, o-o): ");
-            String input = scanner.nextLine().trim();
-
-            try {
-                // 1. Read input and parse it into a ParsedIntent object
-                ParsedIntent intent = parser.parse(input);
-
-                // 2. Find potential moves for the current player and validate the move
-                GamePiece pieceToMove = processAndValidateMove(intent);
-
-                if (pieceToMove != null) {
-                    // 3. Execute the move on the board
-                    executeMove(pieceToMove, intent);
-                    
-                    // 4. Update and print the board, then switch players
-                    printBoard();
-                    switchPlayer();
-
-                    updateGameStatus();
-                    
-                    // 5. Check for checkmate or stalemate conditions
-                    if (this.gameStatus == GameStatus.MATE) {
-                        PieceColor winner = (currentPlayer == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
-                        System.out.println("Mate! Congratulations to " + winner);
-                    }
-                    if (this.gameStatus == GameStatus.STALEMATE) {
-                        System.out.println("Stalemate! Game ends in a draw");
-                    }
-                } else {
-                    System.out.println("Illegal move! Either geometrically impossible or leaves King in check. Try again.");
-                }
-
-            } catch (IllegalArgumentException e) {
-                // Catch input errors from the Parser, inform the user, repeat player turn
-                System.out.println("Invalid input: " + e.getMessage() + ". Please try again.");
-            }
+        if (pieceToMove != null) {
+            executeMove(pieceToMove, intent);
+            
+            switchPlayer();
+            updateGameStatus(); 
+            
+            return true; // Moved successfully
         }
-        scanner.close();
+        
+        return false; // Illegal move
+    }
+
+    public Board getBoard() {
+        return this.board;
+    }
+
+    public PieceColor getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public GameStatus getGameStatus() {
+        return this.gameStatus;
     }
 
     private GamePiece processAndValidateMove(ParsedIntent intent) {
@@ -114,28 +92,28 @@ public class Game {
         }
 
         return candidatePieces.get(0); // Success: return the only valid piece to make the move
-}
+    }
 
     private void executeMove(GamePiece piece, ParsedIntent intent) {
-    Position originalPos = piece.getPosition();
-    Position destPos = intent.destination();
+        Position originalPos = piece.getPosition();
+        Position destPos = intent.destination();
 
-    // 1. Move piece on the board
-    board.setPieceAt(originalPos, null);
-    board.setPieceAt(destPos, piece);
-    
-    // 2. Update the piece's inner position record
-    piece.setPosition(destPos);
+        // 1. Move piece on the board
+        board.setPieceAt(originalPos, null);
+        board.setPieceAt(destPos, piece);
+        
+        // 2. Update the piece's inner position record
+        piece.setPosition(destPos);
 
-    // 3. Update hasMoved for valid pieces
-    if (piece.getPieceType() == PieceType.PAWN || 
-        piece.getPieceType() == PieceType.ROOK || 
-        piece.getPieceType() == PieceType.KING) {
-        piece.setHasMoved(true);
+        // 3. Update hasMoved for valid pieces
+        if (piece.getPieceType() == PieceType.PAWN || 
+            piece.getPieceType() == PieceType.ROOK || 
+            piece.getPieceType() == PieceType.KING) {
+            piece.setHasMoved(true);
+        }
+        
+        // NEED TO ADD EN PASSANT, PROMOTION AND CASTLING LOGIC HERE
     }
-    
-    // NEED TO ADD EN PASSANT, PROMOTION AND CASTLING LOGIC HERE
-}
 
     private void switchPlayer() {
         currentPlayer = (currentPlayer == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
@@ -234,61 +212,5 @@ public class Game {
         piece.setPosition(originalPos);
 
         return inCheck;
-    }
-
-    // --------------------------------------------------------
-    // Print board logic
-    // --------------------------------------------------------
-    
-    private void printBoard() {
-        // ANSI - Color-coding for terminal output
-        final String ANSI_RESET = "\u001B[0m";
-        final String ANSI_WHITE_PIECE = "\u001B[97m"; // // Bright white
-        final String ANSI_BLACK_PIECE = "\u001B[34m"; // Blue (Because Black won't stand out)
-        
-        // קודי צבע לרקע (משבצות)
-        final String ANSI_BG_WHITE_SQUARE = "\u001B[47m"; // background - white (bright gray)
-        final String ANSI_BG_BLACK_SQUARE = "\u001B[100m"; // background - black (dark gray)
-
-        System.out.println("\n   a  b  c  d  e  f  g  h"); // Column headings
-
-        for (int row = 0; row < 8; row++) {
-            System.out.print((8 - row) + " "); // Row numbers on the left side
-
-            for (int col = 0; col < 8; col++) {
-                GamePiece piece = board.getPieceAt(new Position(row, col));
-
-                // even index = white cell, else - black cell
-                boolean isWhiteSquare = (row + col) % 2 == 0; 
-                
-                // choose background color for cell
-                String bgCode = isWhiteSquare ? ANSI_BG_WHITE_SQUARE : ANSI_BG_BLACK_SQUARE;
-
-                if (piece == null) {
-                    // Print with 3 spaces to create the image of a "cell"
-                    System.out.print(bgCode + "   " + ANSI_RESET);
-                } else {
-                    // Choose piece color
-                    String colorCode = (piece.getColor() == PieceColor.WHITE) ? ANSI_WHITE_PIECE : ANSI_BLACK_PIECE; 
-                    String pieceSymbol = getPieceSymbol(piece);
-                    
-                    // Cell occupied
-                    System.out.print(bgCode + colorCode + " " + pieceSymbol + " " + ANSI_RESET);
-                }
-            }
-            System.out.println(" " + (8 - row)); // Row numbers on the right
-        }
-        System.out.println("   a  b  c  d  e  f  g  h\n"); // Column headings for bottom of board
-    }
-
-    private String getPieceSymbol(GamePiece piece) {
-        return switch (piece.getPieceType()) {
-            case PAWN -> "P";
-            case KNIGHT -> "N";
-            case BISHOP -> "B";
-            case ROOK -> "R";
-            case QUEEN -> "Q";
-            case KING -> "K";
-        };
     }
 }
