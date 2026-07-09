@@ -1,0 +1,13 @@
+chess project notes:
+
+CAN BE DONE NOW: 
+- finish implementing Game functions
+- Game.executeMove(piece, intent) : need to add logic specified in func comments
+
+AFTER GAME CLASS IS FULLY FUNCTIONAL:
+- go over the project - find functions that THROW EXCEPTIONS and check how to handle them
+- move every Sys.out.print command outside of Game to make it modular and replacable
+
+AFTER PHASE 1 IS DONE: 
+- need to update the UML diagram
+- write up a pdf file describing game flow, class architecture, design principles... UML should go in there as an addendum

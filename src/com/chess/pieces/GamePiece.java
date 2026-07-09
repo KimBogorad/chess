@@ -9,11 +9,13 @@ public abstract class GamePiece {
     protected PieceColor color; // Enum: WHITE, BLACK
     protected Position position;
     protected PieceType pieceType; // Enum: PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING
+    protected boolean hasMoved;
 
     public GamePiece(PieceColor color, Position position, PieceType pieceType) {
         this.color = color;
         this.position = position;
         this.pieceType = pieceType;
+        this.hasMoved = false;
     }
 
     public PieceColor getColor() {
@@ -65,4 +67,18 @@ public abstract class GamePiece {
     public PieceType getPieceType() {
         return pieceType;
     }
+
+    public Position getPosition() { return this.position; }
+
+    public void setPosition(Position pos) {
+        if (pos.isWithinBounds()) {
+            this.position = pos;
+        }
+        else {
+            throw new IllegalArgumentException("new position for this piece is out of bounds: " + pos);
+        }
+    }
+
+    public boolean hasMoved() { return this.hasMoved; }
+    public void setHasMoved(boolean hasMoved) { this.hasMoved = hasMoved; }
 }

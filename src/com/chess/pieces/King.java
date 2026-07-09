@@ -6,6 +6,7 @@ import com.chess.enums.*;
 import com.chess.board.Position;
 
 public class King extends GamePiece {
+
     public King(PieceColor color, Position position) {
         super(color, position, PieceType.KING);
     }

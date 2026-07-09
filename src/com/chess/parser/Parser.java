@@ -23,8 +23,8 @@ public class Parser {
 
     public ParsedIntent parse(String moveStr) {
         // handle castling moves separately
-        if (moveStr.equals("O-O")) return new ParsedIntent(CastlingType.KINGSIDE);
-        if (moveStr.equals("O-O-O")) return new ParsedIntent(CastlingType.QUEENSIDE);
+        if (moveStr.toLowerCase().equals("o-o")) return new ParsedIntent(CastlingType.KINGSIDE);
+        if (moveStr.toLowerCase().equals("o-o-o")) return new ParsedIntent(CastlingType.QUEENSIDE);
 
         Matcher matcher = MOVE_PATTERN.matcher(moveStr);
         if (!matcher.matches()) {

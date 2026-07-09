@@ -7,8 +7,6 @@ import com.chess.board.Position;
 
 public class Pawn extends GamePiece {
 
-    private boolean hasMoved = false;
-
     public Pawn(PieceColor color, Position position) {
         super(color, position, PieceType.PAWN);
     }
@@ -50,9 +48,5 @@ public class Pawn extends GamePiece {
         captureRays.add(generateMove(direction, -1)); // Diagonal left
 
         return captureRays;
-    }
-
-    public void setHasMoved(boolean hasMoved) {
-        this.hasMoved = hasMoved;
     }
 }
