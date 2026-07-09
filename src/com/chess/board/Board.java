@@ -83,7 +83,7 @@ public class Board {
                 
                 if (pieceAtDest == null) {
                     // the only legal capture move to a clear square is en passant:
-                    if (pos == enPassantTarget) {
+                    if (pos.equals(enPassantTarget)) {
                         validMoves.add(pos);
                         break;
                     } else {

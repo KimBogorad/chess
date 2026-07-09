@@ -7,6 +7,7 @@ import com.chess.moves.*;
 import com.chess.parser.ParsedIntent;
 import com.chess.pieces.GamePiece;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class Game {
@@ -73,7 +74,16 @@ public class Game {
                     
                 
                     for (Position dest : potentialMoves) {
-                        ParsedIntent intent = new ParsedIntent(piece.getPieceType(),  dest);
+                        char fileDisambiguation = (char) ('a' + piece.getPosition().col());
+                        int rankDisambiguation = 8 - piece.getPosition().row();
+                        ParsedIntent intent = new ParsedIntent(
+                                            piece.getPieceType(), 
+                                            dest, 
+                                            EnumSet.noneOf(MoveFlag.class), 
+                                            null, 
+                                            fileDisambiguation,
+                                            rankDisambiguation, 
+                                            CastlingType.NONE);
                         Move move = moveFactory.createMove(board, intent, currentPlayer);
                         if (!leavesKingInCheck(move)) {
                             hasAnyLegalMove = true;
