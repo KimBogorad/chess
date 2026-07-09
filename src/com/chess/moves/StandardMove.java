@@ -32,7 +32,9 @@ public class StandardMove extends Move {
         if (piece.getPieceType() == PieceType.PAWN && Math.abs(startPosition.row() - destination.row()) == 2) {
             // If a pawn skipped a step, the step they skipped is now a valid enPassantTarget. Pass that to the board.
             int skippedRow = (startPosition.row() + destination.row()) / 2;
-            board.setEnPassantTarget(new Position(skippedRow, startPosition.col()));
+            Position target = new Position(skippedRow, startPosition.col());
+            board.setEnPassantTarget(target);
+            System.out.println("En Passant Target set to: " + target);
         } // else : already set to null by Move.execute()
     }
 

@@ -37,7 +37,7 @@ public class Parser {
         // 2. extract destination square
         Position destination = parsePosition(matcher.group(4));
 
-        // 3. build the flags enum set - isCaptue, isCheck, isMate
+        // 3. build the flags enum set - isCapture, isCheck, isMate
         Set<MoveFlag> flags = EnumSet.noneOf(MoveFlag.class);
         if (matcher.group(3) != null) flags.add(MoveFlag.CAPTURE);
         if (matcher.group(6) != null) {

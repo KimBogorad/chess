@@ -82,9 +82,15 @@ public class Board {
                 GamePiece pieceAtDest = getPieceAt(pos);
                 
                 if (pieceAtDest == null) {
+                    // the only legal capture move to a clear square is en passant:
+                    if (pos == enPassantTarget) {
+                        validMoves.add(pos);
+                        break;
+                    } else {
                     // no need to add this position, because we added it as valid walking path,
                     // can keep going to find possible caprture target
                     continue;
+                    }
                 } else {
                     // found a piece, check if it's an enemy piece
                     if (pieceAtDest.getColor() != piece.getColor()) {

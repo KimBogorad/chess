@@ -28,7 +28,7 @@ public record ParsedIntent(
     }
 
     public boolean isCastle() {
-        return castlingType != null;
+        return castlingType != CastlingType.NONE;
     }
 
     public boolean isKingsideCastle() {
