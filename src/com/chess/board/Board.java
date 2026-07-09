@@ -7,6 +7,7 @@ import com.chess.enums.PieceColor;
 
 public class Board {
     private GamePiece[][] grid;
+    private Position enPassantTarget = null;
 
     public Board() {
         // initialize the board
@@ -97,5 +98,11 @@ public class Board {
         }
 
         return validMoves;
+    }
+
+    public Position getEnPassantTarget() { return this.enPassantTarget; }
+
+    public void setEnPassantTarget(Position enPassantTarget) { 
+        this.enPassantTarget = enPassantTarget;
     }
 }

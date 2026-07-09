@@ -26,4 +26,12 @@ public record ParsedIntent(
     public ParsedIntent(CastlingType castlingType) {
         this(null, null, EnumSet.noneOf(MoveFlag.class), null, null, null, castlingType);
     }
+
+    public boolean isCastle() {
+        return castlingType != null;
+    }
+
+    public boolean isKingsideCastle() {
+        return castlingType == CastlingType.KINGSIDE;
+    }
 }

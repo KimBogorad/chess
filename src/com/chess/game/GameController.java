@@ -1,4 +1,4 @@
-package com.chess.game; // או chess.controller, תלוי איך סידרת
+package com.chess.game;
 
 import com.chess.board.Board;
 import com.chess.enums.GameStatus;
