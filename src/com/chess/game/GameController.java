@@ -1,6 +1,5 @@
 package com.chess.game;
 
-import com.chess.board.Board;
 import com.chess.enums.GameStatus;
 import com.chess.enums.PieceColor;
 import com.chess.parser.ParsedIntent;
