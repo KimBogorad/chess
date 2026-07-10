@@ -31,13 +31,32 @@ public class Game {
         if (move == null) {
             return false; // no piece can make this move
         }
+        // Castling : validate castling path
+        if (intent.castlingType() != CastlingType.NONE) {
+        
+        // 1. Can't castle while checked
+        if (isKingInCheck(currentPlayer)) {
+            return false; 
+        }
+        
+        // 2. can't castle 
+        int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
+        // Set the column the King will pass through during castling
+        int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
+        Position crossedSquare = new Position(row, 4 + colStep); 
+        
+        // Validate the square in the King's path
+        if (isPositionThreatened(currentPlayer, crossedSquare)) {
+            return false;
+        }
+    }
         // 2. Check if making this move will leave the king checked - illegal
         if(leavesKingInCheck(move)) {
             return false;
         }       
 
         move.execute(board);
-        switchPlayer();
+        //switchPlayer();
         updateGameStatus();
 
         return true;
@@ -106,6 +125,26 @@ public class Game {
         }
     }
 
+    private boolean isPositionThreatened(PieceColor pieceColor, Position position) {
+        PieceColor enemyColor = (pieceColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+        
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                GamePiece piece = board.getPieceAt(new Position(row, col));
+                
+                if (piece != null && piece.getColor() == enemyColor) {
+                    List<Position> validMoves = board.getValidMovesForPiece(piece);
+                    
+                    if (validMoves.contains(position)) {
+                        return true; // Found threat!
+                    }
+                }
+            }
+        }
+
+        return false; // No threats!
+    }
+
     private boolean isKingInCheck(PieceColor kingColor) {
         Position kingPos = null;
 
@@ -126,23 +165,7 @@ public class Game {
         }
 
         // 2. Find all enemy pieces, check if any of them threaten the king's position
-        PieceColor enemyColor = (kingColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
-        
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                GamePiece piece = board.getPieceAt(new Position(row, col));
-                
-                if (piece != null && piece.getColor() == enemyColor) {
-                    List<Position> validMoves = board.getValidMovesForPiece(piece);
-                    
-                    if (validMoves.contains(kingPos)) {
-                        return true; // Check!
-                    }
-                }
-            }
-        }
-
-        return false; // No check!
+        return isPositionThreatened(kingColor, kingPos);
     }
 
     private boolean leavesKingInCheck(Move move) {

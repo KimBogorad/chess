@@ -34,7 +34,6 @@ public class StandardMove extends Move {
             int skippedRow = (startPosition.row() + destination.row()) / 2;
             Position target = new Position(skippedRow, startPosition.col());
             board.setEnPassantTarget(target);
-            System.out.println("En Passant Target set to: " + target);
         } // else : already set to null by Move.execute()
     }
 

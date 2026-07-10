@@ -17,8 +17,9 @@ public class Board {
 
     public void setup() {
         // Set up pieces for both colors
-        setupPieces(PieceColor.WHITE);
-        setupPieces(PieceColor.BLACK);
+        //setupPieces(PieceColor.WHITE);
+        //setupPieces(PieceColor.BLACK);
+        setupPiecesForTesting();
     }
 
     public void setupPieces(PieceColor color) {
@@ -47,6 +48,16 @@ public class Board {
         for (int col = 0; col < 8; col++) {
             grid[pawnRow][col] = new Pawn(color, new Position(pawnRow, col));
         }
+    }
+
+    public void setupPiecesForTesting() {
+        // need to have kings to avoid stalemate
+        Position whiteKingPos = new Position(7, 4);
+        Position blackKingPos = new Position(0, 2);
+
+        grid[6][4] = new Pawn(PieceColor.WHITE, new Position(6, 4));
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
     }
 
     public GamePiece getPieceAt(Position pos) {

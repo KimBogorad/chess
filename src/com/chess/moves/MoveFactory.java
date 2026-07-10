@@ -139,7 +139,6 @@ public class MoveFactory {
     }
     
     private boolean isEnPassant(Board board, GamePiece piece, Position dest) {
-        System.out.println("Checking En Passant. Dest: " + dest + ", Target: " + board.getEnPassantTarget());
         if (piece.getPieceType() != PieceType.PAWN) return false;
         
         return dest.equals(board.getEnPassantTarget());
