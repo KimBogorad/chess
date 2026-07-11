@@ -2,6 +2,7 @@ package com.chess.moves;
 
 import com.chess.board.Board;
 import com.chess.board.Position;
+import com.chess.enums.MoveFlag;
 import com.chess.enums.PieceColor;
 import com.chess.enums.PieceType;
 import com.chess.parser.ParsedIntent;
@@ -12,41 +13,50 @@ import java.util.List;
 
 public class MoveFactory {
 
-    public Move createMove(Board board, ParsedIntent intent, PieceColor currentPlayer) {
-        
+    public List<Move> createMoves(Board board, ParsedIntent intent, PieceColor currentPlayer) {
+        List<Move> candidates = new ArrayList<>();
+
         // 1. Handle castling
         if (intent.isCastle()) {
-            return createCastlingMove(board, intent, currentPlayer);
-        }
+        candidates.add(createCastlingMove(board, intent, currentPlayer));
+        return candidates;
+    }
 
-        // 2. Find piece to move - checks for validity and disambiguation
-        GamePiece pieceToMove = findPieceForStandardMove(board, intent, currentPlayer);
+        // 2. Find all geometrically relevant pieces
+        List<GamePiece> piecesToMove = findPiecesForStandardMove(board, intent, currentPlayer);
         
-        if (pieceToMove == null) {
+        if (piecesToMove.isEmpty()) {
             throw new IllegalArgumentException("No valid piece can make this move.");
         }
+        // 3. Create the correct move object for each candidate
+        for (GamePiece candidate : piecesToMove) {
+            // 3.1. Validate capture notation and logic 
+            validateCaptureNotation(board, candidate, intent);
 
-        // 3. Handle promotion
-        if (isPromotion(pieceToMove, intent.destination())) {
-            GamePiece newPiece = createPromotedPiece(intent, currentPlayer, intent.destination());
-            return new PromotionMove(pieceToMove, intent.destination(), newPiece);
+            // 3.2. Handle promotion
+            if (isPromotion(candidate, intent.destination())) {
+                candidates.add(createPromotionMove(candidate, intent, currentPlayer));
+            }
+
+            // 3.3. Handle En Passant
+            else if (isEnPassant(board, candidate, intent.destination())) {
+                candidates.add(createEnPassantMove(board, candidate, intent.destination()));
+            }
+
+            // 3.4. Default: Standard Move
+            else {
+                candidates.add(new StandardMove(candidate, intent.destination()));
+            }
         }
-
-        // 4. Handle En Passant
-        if (isEnPassant(board, pieceToMove, intent.destination())) {
-            GamePiece capturedPawn = getEnPassantVictim(board, pieceToMove, intent.destination());
-            return new EnPassantMove(pieceToMove, intent.destination(), capturedPawn);
-        }
-
-        // 5. Default: Standard Move
-        return new StandardMove(pieceToMove, intent.destination());
+        //4. Finally, return all candidates left
+        return candidates;
     }
 
     /**
      * This function attempts to find the single disambiguous piece that can move according to the intent.
      * It succeeds if exactly one piece passes all the validity tests.
      */
-    private GamePiece findPieceForStandardMove(Board board, ParsedIntent intent, PieceColor color) {
+    private List<GamePiece> findPiecesForStandardMove(Board board, ParsedIntent intent, PieceColor color) {
         List<GamePiece> candidates = new ArrayList<>();
 
         for (int row = 0; row < 8; row++) {
@@ -83,11 +93,7 @@ public class MoveFactory {
         if (candidates.isEmpty()) {
             return null; // No valid moves
         }
-        if (candidates.size() > 1) { // Ambiguous and needs to be resolved
-            throw new IllegalArgumentException("Ambiguous move. Please specify file or rank (e.g., Ndf3).");
-        }
-
-        return candidates.get(0); // Success! Return the only valid game piece
+        return candidates; // Success! Return the only valid game piece
     }
     
     // ----------------------------------------------------------------
@@ -119,6 +125,25 @@ public class MoveFactory {
 
         return new CastlingMove(king, kingEnd, rook, rookEnd);
     }
+
+    private void validateCaptureNotation(Board board, GamePiece piece, ParsedIntent intent) {
+        // Is the move a capture?
+        boolean isActualCapture = (board.getPieceAt(intent.destination()) != null) || 
+                                  isEnPassant(board, piece, intent.destination());
+
+        // Was the move intended to be a capture?
+        boolean isIntentCapture = intent.flags().contains(MoveFlag.CAPTURE);
+
+        // Player intended a capture but the move is not a capture
+        if (isIntentCapture && !isActualCapture) {
+            throw new IllegalArgumentException("Invalid notation: 'x' used but there is no piece to capture.");
+        }
+        
+        // Player didn't intend a capture but the move is a capture
+        if (!isIntentCapture && isActualCapture) {
+            throw new IllegalArgumentException("Invalid notation: missing 'x' for a capture move.");
+        }
+    }
     
     private boolean isPromotion(GamePiece piece, Position dest) {
         if (piece.getPieceType() != PieceType.PAWN) return false;
@@ -138,6 +163,11 @@ public class MoveFactory {
             default -> new Queen(color, pos);
         };
     }
+
+    private Move createPromotionMove(GamePiece pawn, ParsedIntent intent, PieceColor color) {
+        GamePiece newPiece = createPromotedPiece(intent, color, intent.destination());
+        return new PromotionMove(pawn, intent.destination(), newPiece);
+    }
     
     private boolean isEnPassant(Board board, GamePiece piece, Position dest) {
         if (piece.getPieceType() != PieceType.PAWN) return false;
@@ -149,5 +179,10 @@ public class MoveFactory {
         // victim will be on the capturing pawn's row, and on the destination column 
         Position victimPos = new Position(movingPawn.getPosition().row(), dest.col());
         return board.getPieceAt(victimPos);
+    }
+
+    private Move createEnPassantMove(Board board, GamePiece movingPawn, Position dest) {
+        GamePiece capturedPawn = getEnPassantVictim(board, movingPawn, dest);
+        return new EnPassantMove(movingPawn, dest, capturedPawn);
     }
 }

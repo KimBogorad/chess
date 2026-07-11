@@ -17,13 +17,19 @@ public class Board {
     }
 
     public void setup() {
-        setupPieces(PieceColor.WHITE);
-        setupPieces(PieceColor.BLACK);
+        //setupPieces(PieceColor.WHITE);
+        //setupPieces(PieceColor.BLACK);
         //setupPiecesForTestPromotion();
         //setupPiecesForTestEnPassant();
         //setupPiecesForTestCastling();
         //setupPiecesForTestMate();
         //setupPiecesForTestStalemate();
+        //setupPiecesForTestEnPassantPin();
+        //setupPiecesForTestMovementAlongPin();
+        //setupPiecesForTestDoubleCheck();
+        //setupPiecesForTestCompoundPromotion();
+        setupPiecesForTestDisambiguationVsPin();
+        //setupPiecesForTestInsufficientMaterial();
     }
 
     public void setupPieces(PieceColor color) {
@@ -145,6 +151,113 @@ public class Board {
 
         grid[rookA.row()][rookA.col()] = new Rook(PieceColor.WHITE, rookA);
         grid[rookB.row()][rookB.col()] = new Rook(PieceColor.WHITE, rookB);
+    }
+
+    public void setupPiecesForTestEnPassantPin() {
+        // Position both Kings
+        Position whiteKingPos = new Position(3, 0); // a5
+        Position blackKingPos = new Position(0, 4); // e8
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Setup the en passant pin scenario on the 5th rank
+        Position whitePawn = new Position(3, 1); // b5
+        Position blackPawn = new Position(1, 2); // c7 (will move to c5)
+        Position blackRook = new Position(3, 7); // h5 (aimed at the white king on a5)
+
+        grid[whitePawn.row()][whitePawn.col()] = new Pawn(PieceColor.WHITE, whitePawn);
+        grid[blackPawn.row()][blackPawn.col()] = new Pawn(PieceColor.BLACK, blackPawn);
+        grid[blackRook.row()][blackRook.col()] = new Rook(PieceColor.BLACK, blackRook);
+    }
+
+    public void setupPiecesForTestMovementAlongPin() {
+        // Position both Kings
+        Position whiteKingPos = new Position(7, 4); // e1
+        Position blackKingPos = new Position(0, 0); // a8
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Place White Rook pinned to the White King by a Black Rook on the E file
+        Position whiteRook = new Position(5, 4); // e3
+        Position blackRook = new Position(0, 4); // e8
+
+        grid[whiteRook.row()][whiteRook.col()] = new Rook(PieceColor.WHITE, whiteRook);
+        grid[blackRook.row()][blackRook.col()] = new Rook(PieceColor.BLACK, blackRook);
+    }
+
+    public void setupPiecesForTestDoubleCheck() {
+        // Position both Kings
+        Position whiteKingPos = new Position(7, 4); // e1
+        Position blackKingPos = new Position(0, 0); // a8
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Place two Black pieces directly attacking the White King
+        Position blackRook = new Position(0, 4); // e8 (vertical check)
+        Position blackKnight = new Position(5, 5); // f3 (knight check)
+
+        grid[blackRook.row()][blackRook.col()] = new Rook(PieceColor.BLACK, blackRook);
+        grid[blackKnight.row()][blackKnight.col()] = new Knight(PieceColor.BLACK, blackKnight);
+
+        // Place a white rook to attempt (and hopefully fail) to take one of the checking pieces
+        Position whiteRook = new Position(0, 7);
+
+        grid[whiteRook.row()][whiteRook.col()] = new Rook(PieceColor.WHITE, whiteRook);
+    }
+
+    public void setupPiecesForTestCompoundPromotion() {
+        // Position both Kings
+        Position whiteKingPos = new Position(7, 7); // h1
+        Position blackKingPos = new Position(0, 4); // e8
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Place White pawn ready to promote and capture, delivering check
+        Position whitePawn = new Position(1, 4); // e7
+        Position blackRook = new Position(0, 3); // d8
+
+        grid[whitePawn.row()][whitePawn.col()] = new Pawn(PieceColor.WHITE, whitePawn);
+        grid[blackRook.row()][blackRook.col()] = new Rook(PieceColor.BLACK, blackRook);
+    }
+
+    public void setupPiecesForTestDisambiguationVsPin() {
+        // White King on a3 (row 5, col 0)
+        Position whiteKingPos = new Position(5, 0); 
+        Position blackKingPos = new Position(0, 0);
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Knight A on b3 (row 5, col 1) - PINNED!
+        // Knight B on f5 (row 3, col 5) - FREE!
+        // Both can geometrically jump to d4 (row 4, col 3).
+        Position whiteKnightA = new Position(5, 1); 
+        Position whiteKnightB = new Position(3, 5); 
+        
+        // Black Rook on h3 (row 5, col 7) pinning Knight A to the King on a3
+        Position blackRook = new Position(5, 7); 
+
+        grid[whiteKnightA.row()][whiteKnightA.col()] = new Knight(PieceColor.WHITE, whiteKnightA);
+        grid[whiteKnightB.row()][whiteKnightB.col()] = new Knight(PieceColor.WHITE, whiteKnightB);
+        grid[blackRook.row()][blackRook.col()] = new Rook(PieceColor.BLACK, blackRook);
+    }
+
+    public void setupPiecesForTestInsufficientMaterial() {
+        // Position both Kings
+        Position whiteKingPos = new Position(7, 4);
+        Position blackKingPos = new Position(0, 4);
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Place just one knight for White (King + Knight vs King = Draw)
+        Position whiteKnight = new Position(4, 4);
+
+        grid[whiteKnight.row()][whiteKnight.col()] = new Knight(PieceColor.WHITE, whiteKnight);
     }
 
     public GamePiece getPieceAt(Position pos) {

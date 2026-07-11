@@ -7,8 +7,10 @@ import com.chess.moves.*;
 import com.chess.parser.ParsedIntent;
 import com.chess.pieces.GamePiece;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 public class Game {
     private Board board;
@@ -24,39 +26,53 @@ public class Game {
     }
 
     // validate move, play, switch currentPlayer and update game status
-    public void playTurn(ParsedIntent intent) {
-        // 1. Create the move, make sure there is a legal move
-        Move move = moveFactory.createMove(board, intent, currentPlayer);
-
-        if (move == null) {
-            throw new IllegalArgumentException("No piece can make this move.");
-        }
-        // Castling : validate castling path
-        if (intent.castlingType() != CastlingType.NONE) {
+    public void playTurn(ParsedIntent intent) throws IllegalArgumentException {
         
-            // 1. Can't castle while checked
-            if (isKingInCheck(currentPlayer)) {
-                throw new IllegalArgumentException("Cannot castle while King is checked.");
-            }
-            
-            int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
-            // Set the column the King will pass through during castling
-            int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
-            Position crossedSquare = new Position(row, 4 + colStep); 
-            
-            // Validate the square in the King's path
-            if (isPositionThreatened(currentPlayer, crossedSquare)) {
-                throw new IllegalArgumentException("Cannot castle through a check.");
-            }
-        }
-        // 2. Check if making this move will leave the king checked - illegal
-        if(leavesKingInCheck(move)) {
-            throw new IllegalArgumentException("Making this move leaves the King checked.");
-        }       
+        List<Move> candidates = moveFactory.createMoves(board, intent, currentPlayer);
 
-        move.execute(board);
+        if (intent.castlingType() != CastlingType.NONE) {
+            validateCastlingRules(intent);
+        }
+
+        List<Move> legalMoves = getLegalMoves(candidates);
+
+        if (legalMoves.isEmpty()) {
+            throw new IllegalArgumentException("Illegal move: This move leaves your King in check.");
+        }
+
+        if (legalMoves.size() > 1) {
+            throw new IllegalArgumentException("Ambiguous move. Please specify file or rank (e.g., Ndf3).");
+        }
+
+        Move finalMove = legalMoves.get(0);
+        finalMove.execute(board);
+        
         switchPlayer();
         updateGameStatus();
+    }
+
+    private void validateCastlingRules(ParsedIntent intent) {
+        if (isKingInCheck(currentPlayer)) {
+            throw new IllegalArgumentException("Cannot castle out of check.");
+        }
+        
+        int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
+        int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
+        Position crossedSquare = new Position(row, 4 + colStep); 
+        
+        if (isPositionThreatened(currentPlayer, crossedSquare)) {
+            throw new IllegalArgumentException("Cannot castle through check.");
+        }
+    }
+
+    private List<Move> getLegalMoves(List<Move> candidates) {
+        List<Move> legalMoves = new ArrayList<>();
+        for (Move move : candidates) {
+            if (!leavesKingInCheck(move)) {
+                legalMoves.add(move);
+            }
+        }
+        return legalMoves;
     }
 
     public Board getBoard() {
@@ -76,42 +92,8 @@ public class Game {
     }
 
     private void updateGameStatus() {
-        boolean hasAnyLegalMove = false;
-
-        // Iterate through the board to find enemy pieces.
-        // used label searchloop to break both loops at once.
-        searchLoop: 
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                GamePiece piece = board.getPieceAt(new Position(row, col));
-                
-                if (piece != null && piece.getColor() == currentPlayer) {
-                    List<Position> potentialMoves = board.getValidMovesForPiece(piece);
-                    
-                
-                    for (Position dest : potentialMoves) {
-                        char fileDisambiguation = (char) ('a' + piece.getPosition().col());
-                        int rankDisambiguation = 8 - piece.getPosition().row();
-                        ParsedIntent intent = new ParsedIntent(
-                                            piece.getPieceType(), 
-                                            dest, 
-                                            EnumSet.noneOf(MoveFlag.class), 
-                                            null, 
-                                            fileDisambiguation,
-                                            rankDisambiguation, 
-                                            CastlingType.NONE);
-                        Move move = moveFactory.createMove(board, intent, currentPlayer);
-                        if (!leavesKingInCheck(move)) {
-                            hasAnyLegalMove = true;
-                            break searchLoop; //  found a legal move: game isn't over
-                        }
-                    }
-                }
-            }
-        }
-
         // If there are no legal moves:
-        if (!hasAnyLegalMove) {
+        if (!hasAnyLegalMoves(currentPlayer)) {
             if (isKingInCheck(currentPlayer)) {
                 this.gameStatus = GameStatus.MATE; // No more moves + Check = Mate
             } else {
@@ -120,6 +102,42 @@ public class Game {
         } else { // If there is at least one legal move:
             this.gameStatus = GameStatus.ACTIVE;
         }
+    }
+
+    private boolean hasAnyLegalMoves(PieceColor color) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                GamePiece piece = board.getPieceAt(new Position(row, col));
+                
+                if (piece != null && piece.getColor() == color) {
+                    List<Position> potentialMoves = board.getValidMovesForPiece(piece);
+
+                    for (Position dest : potentialMoves) {
+                        try {
+                            // Ensure our simulated intent gets a flag for capture if relevant
+                            boolean isCapture = board.getPieceAt(dest) != null || dest.equals(board.getEnPassantTarget());
+                            Set<MoveFlag> flags = isCapture ? EnumSet.of(MoveFlag.CAPTURE) : EnumSet.noneOf(MoveFlag.class);
+
+                            // Create a simulated intent to check for legal moves
+                            ParsedIntent intent = new ParsedIntent(
+                                    piece.getPieceType(), dest, flags, null, null, null, CastlingType.NONE);
+
+                            // Get a list of all legal moves using the simulated intent 
+                            List<Move> candidates = moveFactory.createMoves(board, intent, color);
+                            List<Move> legalMoves = getLegalMoves(candidates);
+
+                            // Found a legal move = stop everything!
+                            if (!legalMoves.isEmpty()) {
+                                return true; 
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // Illegal move for whatever reason, move on to next piece
+                        }
+                    }
+                }
+            }
+        }
+        return false; // Scanned all possible moves, no legal moves found
     }
 
     private boolean isPositionThreatened(PieceColor pieceColor, Position position) {
