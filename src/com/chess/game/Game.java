@@ -24,19 +24,19 @@ public class Game {
     }
 
     // validate move, play, switch currentPlayer and update game status
-    public boolean playTurn(ParsedIntent intent) {
+    public void playTurn(ParsedIntent intent) {
         // 1. Create the move, make sure there is a legal move
         Move move = moveFactory.createMove(board, intent, currentPlayer);
 
         if (move == null) {
-            return false; // no piece can make this move
+            throw new IllegalArgumentException("No piece can make this move.");
         }
         // Castling : validate castling path
         if (intent.castlingType() != CastlingType.NONE) {
         
             // 1. Can't castle while checked
             if (isKingInCheck(currentPlayer)) {
-                return false; 
+                throw new IllegalArgumentException("Cannot castle while King is checked.");
             }
             
             int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
@@ -46,19 +46,17 @@ public class Game {
             
             // Validate the square in the King's path
             if (isPositionThreatened(currentPlayer, crossedSquare)) {
-                return false;
+                throw new IllegalArgumentException("Cannot castle through a check.");
             }
         }
         // 2. Check if making this move will leave the king checked - illegal
         if(leavesKingInCheck(move)) {
-            return false;
+            throw new IllegalArgumentException("Making this move leaves the King checked.");
         }       
 
         move.execute(board);
         switchPlayer();
         updateGameStatus();
-
-        return true;
     }
 
     public Board getBoard() {

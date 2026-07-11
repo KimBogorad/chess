@@ -31,23 +31,21 @@ public class GameController {
                 ParsedIntent intent = parser.parse(input);
 
                 // 3. Send the move to Game engine - check move validity and move if possible
-                boolean success = game.playTurn(intent);
+                game.playTurn(intent);
 
-                if (success) {
-                    // 4. Display updated board after successful move
-                    view.displayBoard(game.getBoard());
-                    
-                    // 5. After every move, check if game is over for any reason
-                    if (game.getGameStatus() != GameStatus.ACTIVE) {
-                        PieceColor winner = (game.getCurrentPlayer() == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
-                        view.showGameOver(game.getGameStatus(), winner);
-                    }
-                } else {
-                    view.showError("Illegal move! Either geometrically impossible or leaves King in check. Try again.");
+            
+                // 4. Display updated board after successful move
+                view.displayBoard(game.getBoard());
+                
+                // 5. After every move, check if game is over for any reason
+                if (game.getGameStatus() != GameStatus.ACTIVE) {
+                    PieceColor winner = (game.getCurrentPlayer() == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+                    view.showGameOver(game.getGameStatus(), winner);
                 }
+                
 
             } catch (IllegalArgumentException e) {
-                view.showError("Invalid input: " + e.getMessage() + ". Please try again.");
+                view.showError("Invalid input: " + e.getMessage() + " Please try again.");
             }
         }
     }

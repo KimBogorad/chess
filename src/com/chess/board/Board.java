@@ -62,7 +62,10 @@ public class Board {
         grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
         grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
 
-        grid[6][4] = new Pawn(PieceColor.WHITE, new Position(6, 4));
+        // Place pawn to promote
+        Position pawn = new Position(6,4);
+
+        grid[pawn.row()][pawn.col()] = new Pawn(PieceColor.WHITE, pawn);
     }
 
     public void setupPiecesForTestEnPassant() {
@@ -74,8 +77,11 @@ public class Board {
         grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
 
         // Place opposing pawns to test en passant
-        grid[4][4] = new Pawn(PieceColor.WHITE, new Position(4, 4));
-        grid[1][3] = new Pawn(PieceColor.BLACK, new Position(1,3));
+        Position whitePawn = new Position(4,4);
+        Position blackPawn = new Position(1, 3);
+
+        grid[whitePawn.row()][whitePawn.col()] = new Pawn(PieceColor.WHITE, whitePawn);
+        grid[blackPawn.row()][blackPawn.col()] = new Pawn(PieceColor.BLACK, blackPawn);
     }
 
     public void setupPiecesForTestCastling() {
@@ -87,16 +93,26 @@ public class Board {
         grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
 
         // Place White Rooks
-        grid[7][0] = new Rook(PieceColor.WHITE, new Position(7, 0));
-        grid[7][7] = new Rook(PieceColor.WHITE, new Position(7, 7));
+
+        Position whiteRookA = new Position(7, 0);
+        Position whiteRookB = new Position(7,7);
+
+        grid[whiteRookA.row()][whiteRookA.col()] = new Rook(PieceColor.WHITE, whiteRookA);
+        grid[whiteRookB.row()][whiteRookB.col()] = new Rook(PieceColor.WHITE, whiteRookB);
 
         // Place Black Rooks
-        grid[0][0] = new Rook(PieceColor.BLACK, new Position(0, 0));
-        grid[0][7] = new Rook(PieceColor.BLACK, new Position(0, 7));
+        Position blackRookA = new Position(0, 0);
+        Position blackRookB = new Position(0,7);
+
+        grid[blackRookA.row()][blackRookA.col()] = new Rook(PieceColor.BLACK, blackRookA);
+        grid[blackRookB.row()][blackRookB.col()] = new Rook(PieceColor.BLACK, blackRookB);
 
         // Place black and white Queens for testing castling under check
-        grid[4][5] = new Queen(PieceColor.WHITE, new Position(4, 5));
-        grid[4][4] = new Queen(PieceColor.BLACK, new Position(4,4));
+        Position whiteQueen = new Position(4, 5);
+        Position blackQueen = new Position(4,4);
+
+        grid[whiteQueen.row()][whiteQueen.col()] = new Queen(PieceColor.WHITE, whiteQueen);
+        grid[blackQueen.row()][blackQueen.col()] = new Queen(PieceColor.BLACK, blackQueen);
     }
 
     public void setupPiecesForTestMate() {
@@ -108,19 +124,27 @@ public class Board {
         grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
 
         // Two white rooks for quick line-by-line mate
-        grid[3][0] = new Rook(PieceColor.WHITE, new Position(3, 0));
-        grid[2][7] = new Rook(PieceColor.WHITE, new Position(2, 7));
+        Position rookA = new Position(3, 0);
+        Position rookB = new Position(2, 7);
+        
+        grid[rookA.row()][rookA.col()] = new Rook(PieceColor.WHITE, rookA);
+        grid[rookB.row()][rookB.col()] = new Rook(PieceColor.WHITE, rookB);
     }
 
     public void setupPiecesForTestStalemate() {
-        // need to have kings to avoid stalemate
+        // Position both Kings
         Position whiteKingPos = new Position(7, 4);
-        Position blackKingPos = new Position(0, 2);
+        Position blackKingPos = new Position(0, 0);
 
         grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
         grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
 
-        
+        // Position 2 white rooks to create stalemate
+        Position rookA = new Position(7, 2);
+        Position rookB = new Position(1, 7);
+
+        grid[rookA.row()][rookA.col()] = new Rook(PieceColor.WHITE, rookA);
+        grid[rookB.row()][rookB.col()] = new Rook(PieceColor.WHITE, rookB);
     }
 
     public GamePiece getPieceAt(Position pos) {
