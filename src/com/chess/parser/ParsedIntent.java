@@ -34,4 +34,18 @@ public record ParsedIntent(
     public boolean isKingsideCastle() {
         return castlingType == CastlingType.KINGSIDE;
     }
+
+    @Override
+    public String toString() {
+        String toString = "Parsed Intent: {";
+        toString += "Piece Type: " + pieceType; 
+        toString += "\nDestination: " + destination;
+        toString += "\nFlags: " + flags;
+        toString += "\nPromotion Piece: " + promotionPiece;
+        toString += "\nRank Disambiguation: " + rankDisambiguation;
+        toString += "\nFile Disambiguation: " + fileDisambiguation;
+        toString += "\nCastling Type: " + castlingType + "}";
+
+        return toString;
+    }
 }

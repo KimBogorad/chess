@@ -60,7 +60,6 @@ public class Parser {
         if(matcher.group(5) == null) {
             possiblePromotion = null;
         } else {
-            System.out.println(matcher.group(5));
             possiblePromotion = parsePieceType(matcher.group(5).substring(1));
             if (possiblePromotion == PieceType.KING || possiblePromotion == PieceType.PAWN) {
                 throw new IllegalArgumentException("Pawn cannot stay a pawn nor be promoted to a King.");

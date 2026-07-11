@@ -26,6 +26,7 @@ public class Game {
     // validate move, play, switch currentPlayer and update game status
     public boolean playTurn(ParsedIntent intent) {
         // 1. Create the move, make sure there is a legal move
+        System.out.print(intent);
         Move move = moveFactory.createMove(board, intent, currentPlayer);
 
         if (move == null) {
@@ -34,29 +35,29 @@ public class Game {
         // Castling : validate castling path
         if (intent.castlingType() != CastlingType.NONE) {
         
-        // 1. Can't castle while checked
-        if (isKingInCheck(currentPlayer)) {
-            return false; 
+            // 1. Can't castle while checked
+            if (isKingInCheck(currentPlayer)) {
+                return false; 
+            }
+            
+            int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
+            // Set the column the King will pass through during castling
+            int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
+            Position crossedSquare = new Position(row, 4 + colStep); 
+            
+            // Validate the square in the King's path
+            if (isPositionThreatened(currentPlayer, crossedSquare)) {
+                return false;
+            }
         }
-        
-        // 2. can't castle 
-        int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
-        // Set the column the King will pass through during castling
-        int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
-        Position crossedSquare = new Position(row, 4 + colStep); 
-        
-        // Validate the square in the King's path
-        if (isPositionThreatened(currentPlayer, crossedSquare)) {
-            return false;
-        }
-    }
         // 2. Check if making this move will leave the king checked - illegal
         if(leavesKingInCheck(move)) {
+            System.out.println("ERROR!!!");
             return false;
         }       
 
         move.execute(board);
-        //switchPlayer();
+        switchPlayer();
         updateGameStatus();
 
         return true;
@@ -134,6 +135,7 @@ public class Game {
                 
                 if (piece != null && piece.getColor() == enemyColor) {
                     List<Position> validMoves = board.getValidMovesForPiece(piece);
+                    System.out.println("Found possible attacker! piece type: " + piece.getPieceType() + ",\nvalid moves: " + validMoves);
                     
                     if (validMoves.contains(position)) {
                         return true; // Found threat!
@@ -163,7 +165,7 @@ public class Game {
         if (kingPos == null) {
             return false; // Technical edge case: King is not on board
         }
-
+        System.out.println("found the king position to be: " + kingPos);
         // 2. Find all enemy pieces, check if any of them threaten the king's position
         return isPositionThreatened(kingColor, kingPos);
     }

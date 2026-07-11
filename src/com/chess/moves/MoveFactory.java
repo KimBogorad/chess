@@ -58,6 +58,10 @@ public class MoveFactory {
                     
                     // Can this piece geometrically move to intended position?
                     List<Position> validMoves = board.getValidMovesForPiece(piece);
+
+                    System.out.println("Checking " + piece.getPieceType() + " at " + piece.getPosition() + 
+                           ". Valid moves: " + validMoves);
+                           
                     if (validMoves.contains(intent.destination())) {
                         
                         // Disambiguation

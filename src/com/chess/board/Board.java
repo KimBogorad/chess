@@ -2,6 +2,7 @@ package com.chess.board;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.chess.pieces.*;
 import com.chess.enums.PieceColor;
 
@@ -16,10 +17,8 @@ public class Board {
     }
 
     public void setup() {
-        // Set up pieces for both colors
-        //setupPieces(PieceColor.WHITE);
-        //setupPieces(PieceColor.BLACK);
-        setupPiecesForTesting();
+        setupPieces(PieceColor.WHITE);
+        setupPieces(PieceColor.BLACK);
     }
 
     public void setupPieces(PieceColor color) {
@@ -50,14 +49,73 @@ public class Board {
         }
     }
 
-    public void setupPiecesForTesting() {
+    public void setupPiecesForTestPromotion() {
         // need to have kings to avoid stalemate
         Position whiteKingPos = new Position(7, 4);
         Position blackKingPos = new Position(0, 2);
 
-        grid[6][4] = new Pawn(PieceColor.WHITE, new Position(6, 4));
         grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
         grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        grid[6][4] = new Pawn(PieceColor.WHITE, new Position(6, 4));
+    }
+
+    public void setupPiecesForTestEnPassant() {
+        // need to have kings to avoid stalemate
+        Position whiteKingPos = new Position(7, 4);
+        Position blackKingPos = new Position(0, 2);
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Place opposing pawns to test en passant
+        grid[4][4] = new Pawn(PieceColor.WHITE, new Position(4, 4));
+        grid[1][3] = new Pawn(PieceColor.BLACK, new Position(1,3));
+    }
+
+    public void setupPiecesForTestCastling() {
+        // Place both kings
+        Position whiteKingPos = new Position(7, 4);
+        Position blackKingPos = new Position(0, 4);
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Place White Rooks
+        grid[7][0] = new Rook(PieceColor.WHITE, new Position(7, 0));
+        grid[7][7] = new Rook(PieceColor.WHITE, new Position(7, 7));
+
+        // Place Black Rooks
+        grid[0][0] = new Rook(PieceColor.BLACK, new Position(0, 0));
+        grid[0][7] = new Rook(PieceColor.BLACK, new Position(0, 7));
+
+        // Place black and white Queens for testing castling under check
+        grid[4][5] = new Queen(PieceColor.WHITE, new Position(4, 5));
+        grid[4][4] = new Queen(PieceColor.BLACK, new Position(4,4));
+    }
+
+    public void setupPiecesForTestMate() {
+        // need to have kings to avoid stalemate
+        Position whiteKingPos = new Position(7, 4);
+        Position blackKingPos = new Position(0, 2);
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        // Two white rooks for quick line-by-line mate
+        grid[3][0] = new Rook(PieceColor.WHITE, new Position(3, 0));
+        grid[2][7] = new Rook(PieceColor.WHITE, new Position(2, 7));
+    }
+
+    public void setupPiecesForTestStalemate() {
+        // need to have kings to avoid stalemate
+        Position whiteKingPos = new Position(7, 4);
+        Position blackKingPos = new Position(0, 2);
+
+        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
+        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
+
+        
     }
 
     public GamePiece getPieceAt(Position pos) {
