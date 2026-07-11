@@ -19,6 +19,11 @@ public class Board {
     public void setup() {
         setupPieces(PieceColor.WHITE);
         setupPieces(PieceColor.BLACK);
+        //setupPiecesForTestPromotion();
+        //setupPiecesForTestEnPassant();
+        //setupPiecesForTestCastling();
+        //setupPiecesForTestMate();
+        //setupPiecesForTestStalemate();
     }
 
     public void setupPieces(PieceColor color) {
