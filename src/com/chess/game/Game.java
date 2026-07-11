@@ -51,30 +51,6 @@ public class Game {
         updateGameStatus();
     }
 
-    private void validateCastlingRules(ParsedIntent intent) {
-        if (isKingInCheck(currentPlayer)) {
-            throw new IllegalArgumentException("Cannot castle out of check.");
-        }
-        
-        int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
-        int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
-        Position crossedSquare = new Position(row, 4 + colStep); 
-        
-        if (isPositionThreatened(currentPlayer, crossedSquare)) {
-            throw new IllegalArgumentException("Cannot castle through check.");
-        }
-    }
-
-    private List<Move> getLegalMoves(List<Move> candidates) {
-        List<Move> legalMoves = new ArrayList<>();
-        for (Move move : candidates) {
-            if (!leavesKingInCheck(move)) {
-                legalMoves.add(move);
-            }
-        }
-        return legalMoves;
-    }
-
     public Board getBoard() {
         return this.board;
     }
@@ -86,6 +62,10 @@ public class Game {
     public GameStatus getGameStatus() {
         return this.gameStatus;
     }
+
+    // ----------------------------------------------------------------
+    // Private helper methods 
+    // ----------------------------------------------------------------
 
     private void switchPlayer() {
         currentPlayer = (currentPlayer == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
@@ -188,4 +168,30 @@ public class Game {
         move.undo(board);
         return leaves;
     }
+
+    private void validateCastlingRules(ParsedIntent intent) {
+        if (isKingInCheck(currentPlayer)) {
+            throw new IllegalArgumentException("Cannot castle out of check.");
+        }
+        
+        int row = (currentPlayer == PieceColor.WHITE) ? 7 : 0;
+        int colStep = (intent.castlingType() == CastlingType.KINGSIDE) ? 1 : -1;
+        Position crossedSquare = new Position(row, 4 + colStep); 
+        
+        if (isPositionThreatened(currentPlayer, crossedSquare)) {
+            throw new IllegalArgumentException("Cannot castle through check.");
+        }
+    }
+
+    private List<Move> getLegalMoves(List<Move> candidates) {
+        List<Move> legalMoves = new ArrayList<>();
+        for (Move move : candidates) {
+            if (!leavesKingInCheck(move)) {
+                legalMoves.add(move);
+            }
+        }
+        return legalMoves;
+    }
+
+
 }
