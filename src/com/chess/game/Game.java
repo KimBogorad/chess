@@ -17,12 +17,14 @@ public class Game {
     private PieceColor currentPlayer;
     private GameStatus gameStatus;
     private final MoveFactory moveFactory;
+    private final List<MoveRecord> moveHistory;
 
     public Game() {
         this.board = new Board();
         this.currentPlayer = PieceColor.WHITE; // White always starts (racism aside)
         this.gameStatus = GameStatus.ACTIVE;
         this.moveFactory = new MoveFactory();
+        this.moveHistory = new ArrayList<>();
     }
 
     // validate move, play, switch currentPlayer and update game status
@@ -63,6 +65,14 @@ public class Game {
         return this.gameStatus;
     }
 
+    public void addMoveToHistory(MoveRecord record) {
+        moveHistory.add(record);
+    }
+
+    public List<MoveRecord> getMoveHistory() {
+        return moveHistory;
+    }
+    
     // ----------------------------------------------------------------
     // Private helper methods 
     // ----------------------------------------------------------------
