@@ -20,24 +20,30 @@ public class GameController {
 
     public void start() {
         view.showMessage("Welcome to Java Chess!");
-        view.displayBoard(game.getBoard());
 
-        while (game.getGameStatus() == GameStatus.ACTIVE) {
-            // 1. Using view for any output related issues to support modularity and separation of concerns
-            String input = view.promptForMove(game.getCurrentPlayer());
+        view.displayBoard(game.getBoard(), game.getCurrentPlayer());
 
-            try {
-                // 2. Using parser to parse input into a playable move
+        view.onMoveSubmitted(this::handleUserMove);
+
+        view.startInputLoop();
+    }
+
+    private void handleUserMove(String input) {
+        if (game.getGameStatus() != GameStatus.ACTIVE) {
+            return;
+        }
+        try {
+                // 1. Using parser to parse input into a playable move
                 ParsedIntent intent = parser.parse(input);
 
-                // 3. Send the move to Game engine - check move validity and move if possible
+                // 2. Send the move to Game engine - check move validity and move if possible
                 game.playTurn(intent);
 
             
-                // 4. Display updated board after successful move
-                view.displayBoard(game.getBoard());
+                // 3. Display updated board after successful move
+                view.displayBoard(game.getBoard(), game.getCurrentPlayer());
                 
-                // 5. After every move, check if game is over for any reason
+                // 4. After every move, check if game is over for any reason
                 if (game.getGameStatus() != GameStatus.ACTIVE) {
                     PieceColor winner = (game.getCurrentPlayer() == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
                     view.showGameOver(game.getGameStatus(), winner);
@@ -47,6 +53,5 @@ public class GameController {
             } catch (IllegalArgumentException e) {
                 view.showError("Invalid input: " + e.getMessage() + " Please try again.");
             }
-        }
     }
 }

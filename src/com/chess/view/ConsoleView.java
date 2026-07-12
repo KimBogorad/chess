@@ -7,16 +7,23 @@ import com.chess.enums.PieceColor;
 import com.chess.pieces.GamePiece;
 
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class ConsoleView implements ChessView {
     private final Scanner scanner;
+    private Consumer<String> moveConsumer;
+    private PieceColor currentPlayer;
+    private GameStatus gameStatus;
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
+        this.gameStatus = GameStatus.ACTIVE;
     }
 
     @Override
-    public void displayBoard(Board board) {
+    public void displayBoard(Board board, PieceColor currentPlayer) {
+        this.currentPlayer = currentPlayer;
+
         final String ANSI_RESET = "\u001B[0m";
         final String ANSI_WHITE_PIECE = "\u001B[97m"; 
         final String ANSI_BLACK_PIECE = "\u001B[34m"; 
@@ -47,6 +54,24 @@ public class ConsoleView implements ChessView {
     }
 
     @Override
+    public void onMoveSubmitted(Consumer<String> moveConsumer) {
+        this.moveConsumer = moveConsumer;
+    }
+
+    @Override
+    public void startInputLoop() {
+        while (this.gameStatus == GameStatus.ACTIVE) {
+            System.out.print(currentPlayer + "'s turn. Enter move (e.g., e4, Nf3, O-O): ");
+            String input = scanner.nextLine().trim();
+            
+            if (moveConsumer != null && !input.isEmpty()) {
+                // Activate the callback and send the input to the controller (handleUserMove)
+                moveConsumer.accept(input); 
+            }
+        }
+    }
+
+    @Override
     public void showMessage(String message) {
         System.out.println(message);
     }
@@ -67,12 +92,6 @@ public class ConsoleView implements ChessView {
             System.out.println("DRAW! Insufficient game pieces on the board.");
         }
         System.out.println("==================================\n");
-    }
-
-    @Override
-    public String promptForMove(PieceColor currentPlayer) {
-        System.out.print(currentPlayer + "'s turn. Enter move (e.g., e4, Nf3, O-O): ");
-        return scanner.nextLine().trim();
     }
 
     // Helper method to help draw the board

@@ -25,7 +25,7 @@ public class MoveFactory {
         // 2. Find all geometrically relevant pieces
         List<GamePiece> piecesToMove = findPiecesForStandardMove(board, intent, currentPlayer);
         
-        if (piecesToMove.isEmpty()) {
+        if ( piecesToMove == null || piecesToMove.isEmpty()) {
             throw new IllegalArgumentException("No valid piece can make this move.");
         }
         // 3. Create the correct move object for each candidate
