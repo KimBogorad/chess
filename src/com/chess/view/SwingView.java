@@ -64,6 +64,7 @@ public class SwingView implements ChessView {
                 button.setFocusPainted(false);
                 button.setOpaque(true);
                 button.setBorderPainted(false);
+                button.setRolloverEnabled(false);
                 
                 // צביעת המשבצות
                 if ((row + col) % 2 == 0) {
@@ -207,7 +208,16 @@ public class SwingView implements ChessView {
             if (piece != null && piece.getColor() == currentPlayer) {
                 selectedPosition = pos;
                 // סימון הכלי הנבחר (עובד מעולה גם עם תמונות שקופות)
-                squares[pos.row()][pos.col()].setBackground(new Color(255, 255, 0, 100)); // צהוב חצי שקוף
+                // בדיקה האם המשבצת שעליה לחצנו היא בהירה או כהה
+                boolean isLightSquare = (pos.row() + pos.col()) % 2 == 0;
+
+                if (isLightSquare) {
+                    // צבע אטום למשבצת בהירה מודגשת
+                    squares[pos.row()][pos.col()].setBackground(new Color(247, 247, 105)); 
+                } else {
+                    // צבע אטום למשבצת כהה מודגשת
+                    squares[pos.row()][pos.col()].setBackground(new Color(186, 202, 68)); 
+                }
             }
         } 
         else {
