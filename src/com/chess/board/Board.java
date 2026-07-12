@@ -19,7 +19,6 @@ public class Board {
     public void setup() {
         setupPieces(PieceColor.WHITE);
         setupPieces(PieceColor.BLACK);
-        //setupPiecesForTestInsufficientMaterial();
     }
 
     public void setupPieces(PieceColor color) {
@@ -48,20 +47,6 @@ public class Board {
         for (int col = 0; col < 8; col++) {
             grid[pawnRow][col] = new Pawn(color, new Position(pawnRow, col));
         }
-    }
- 
-    public void setupPiecesForTestInsufficientMaterial() {
-        // Position both Kings
-        Position whiteKingPos = new Position(7, 4);
-        Position blackKingPos = new Position(0, 4);
-
-        grid[whiteKingPos.row()][whiteKingPos.col()] = new King(PieceColor.WHITE, whiteKingPos);
-        grid[blackKingPos.row()][blackKingPos.col()] = new King(PieceColor.BLACK, blackKingPos);
-
-        // Place just one knight for White (King + Knight vs King = Draw)
-        Position whiteKnight = new Position(4, 4);
-
-        grid[whiteKnight.row()][whiteKnight.col()] = new Knight(PieceColor.WHITE, whiteKnight);
     }
 
     public GamePiece getPieceAt(Position pos) {

@@ -72,6 +72,12 @@ public class Game {
     }
 
     private void updateGameStatus() {
+
+        // If there are insufficient game pieces on the board, DRAW
+        if (isInsufficientMaterial()) {
+            this.gameStatus = GameStatus.DRAW;
+            return;
+        }
         // If there are no legal moves:
         if (!hasAnyLegalMoves(currentPlayer)) {
             if (isKingInCheck(currentPlayer)) {
@@ -193,5 +199,81 @@ public class Game {
         return legalMoves;
     }
 
+    // Returns the minor piece (knight or bishop), aside from the King.
+    private GamePiece getMinorPieceOrNull(List<GamePiece> pieces) {
+        if (pieces.size() != 2) {
+            return null; // Only relevant when there's a King and one other piece
+        }
+        
+        for (GamePiece piece : pieces) {
+            if (piece.getPieceType() != PieceType.KING) {
+                if (piece.getPieceType() == PieceType.KNIGHT || piece.getPieceType() == PieceType.BISHOP) {
+                    return piece;
+                }
+                // There is a King and a piece that isn't a Bishop or a Knight
+                return null; 
+            }
+        }
+        return null;
+    }
 
+    // Check for DRAW scenario due to insufficient game pieces on the board
+    private boolean isInsufficientMaterial() {
+        List<GamePiece> whitePieces = new ArrayList<>();
+        List<GamePiece> blackPieces = new ArrayList<>();
+
+        // 1. Gather all the game pieces into designated lists
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                GamePiece piece = board.getPieceAt(new Position(row, col));
+                if (piece != null) {
+                    if (piece.getColor() == PieceColor.WHITE) {
+                        whitePieces.add(piece);
+                    } else {
+                        blackPieces.add(piece);
+                    }
+                }
+            }
+        }
+
+        int whiteCount = whitePieces.size();
+        int blackCount = blackPieces.size();
+        int totalCount = whiteCount + blackCount;
+
+        // If one of the sides has more than 2 pieces it's not a draw
+        if (whiteCount > 2 || blackCount > 2) {
+            return false;
+        }
+
+        // 1. King vs King
+        if (totalCount == 2) {
+            return true;
+        }
+
+        // Get the light pieces aside from the Kings
+        GamePiece whiteMinor = getMinorPieceOrNull(whitePieces);
+        GamePiece blackMinor = getMinorPieceOrNull(blackPieces);
+
+        // King + light piece vs King
+        if (totalCount == 3 && (whiteMinor != null || blackMinor != null)) {
+            return true;
+        }
+
+        // King + light piece vs King + light piece
+        if (totalCount == 4 && whiteMinor != null && blackMinor != null) {
+            
+            // Bishop vs Bishop is a draw only if they are both on the same color! 
+            if (whiteMinor.getPieceType() == PieceType.BISHOP && blackMinor.getPieceType() == PieceType.BISHOP) {
+                boolean isWhiteOnLight = (whiteMinor.getPosition().row() + whiteMinor.getPosition().col()) % 2 == 0;
+                boolean isBlackOnLight = (blackMinor.getPosition().row() + blackMinor.getPosition().col()) % 2 == 0;
+                
+                return isWhiteOnLight == isBlackOnLight; 
+            }
+            
+            // Knight vs Knight or Knight vs Bishop
+            return true;
+        }
+        // Covered all draw scenarios, here it's safe to declare not a DRAW
+        return false;
+    }
 }

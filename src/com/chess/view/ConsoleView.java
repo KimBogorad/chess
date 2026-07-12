@@ -63,6 +63,8 @@ public class ConsoleView implements ChessView {
             System.out.println("CHECKMATE! Congratulations to " + winner + "!");
         } else if (status == GameStatus.STALEMATE) {
             System.out.println("STALEMATE! The game ends in a draw.");
+        } else if (status == GameStatus.DRAW) {
+            System.out.println("DRAW! Insufficient game pieces on the board.");
         }
         System.out.println("==================================\n");
     }
